@@ -1,0 +1,394 @@
+/* Prism.js主题样式 - 与现有UI风格一致 */
+
+/* 基础代码块样式 */
+pre[class*="language-"],
+code[class*="language-"] {
+    color: #f8f8f2;
+    background: #282c34;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+    font-family: 'Fira Code', 'Fira Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    tab-size: 4;
+    hyphens: none;
+    border-radius: 8px;
+    margin: 8px 0;
+    padding: 16px;
+    overflow: auto;
+    position: relative;
+    border: 1px solid #3e4451;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* 行内代码样式 */
+:not(pre) > code[class*="language-"] {
+    background: #f3f4f6;
+    color: #1f2937;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: normal;
+    border: 1px solid #e5e7eb;
+    font-family: 'Fira Code', 'Fira Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* 语法高亮颜色 - 使用更鲜明的颜色方案 */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #6a9955;
+    font-style: italic;
+}
+
+.token.punctuation {
+    color: #d4d4d4;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #b5cea8;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #ce9178;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #d4d4d4;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword,
+.token.class-name {
+    color: #c586c0;
+}
+
+.token.function,
+.token.method,
+.token.function-variable {
+    color: #dcdcaa;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #d16969;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+/* 特殊语言的高亮增强 */
+.language-javascript .token.keyword,
+.language-typescript .token.keyword {
+    color: #569cd6;
+}
+
+.language-python .token.keyword,
+.language-python .token.builtin {
+    color: #c586c0;
+}
+
+.language-css .token.selector,
+.language-scss .token.selector {
+    color: #d7ba7d;
+}
+
+.language-html .token.tag,
+.language-markup .token.tag {
+    color: #569cd6;
+}
+
+.language-html .token.attr-name,
+.language-markup .token.attr-name {
+    color: #9cdcfe;
+}
+
+.language-html .token.attr-value,
+.language-markup .token.attr-value {
+    color: #ce9178;
+}
+
+/* 代码块内的特殊元素样式 */
+.token.namespace {
+    opacity: 0.7;
+}
+
+.token.tab:not(:empty):before,
+.token.cr:before,
+.token.lf:before {
+    color: #d4d4d4;
+    opacity: 0.5;
+}
+
+/* 嵌套代码块容器 */
+.code-block-container {
+    position: relative;
+    margin: 12px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #282c34;
+    border: 1px solid #3e4451;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* 语言标签 */
+.code-language-label {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(40, 44, 52, 0.9);
+    color: #d4d4d4;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.75em;
+    font-family: 'Fira Code', 'Fira Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-weight: 600;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 5;
+}
+
+.code-language-label:hover {
+    opacity: 1;
+    background: rgba(40, 44, 52, 0.95);
+    transform: translateY(-1px);
+}
+
+/* 复制按钮 */
+.code-copy-button {
+    position: absolute;
+    top: 12px;
+    right: 80px;
+    background: linear-gradient(135deg, #007acc, #005a9e);
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75em;
+    font-family: 'Fira Code', 'Fira Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-weight: 500;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.code-block-container:hover .code-copy-button {
+    opacity: 0.9;
+}
+
+.code-copy-button:hover {
+    opacity: 1 !important;
+    background: linear-gradient(135deg, #0086d9, #0066b3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 122, 204, 0.3);
+}
+
+.code-copy-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(0, 122, 204, 0.3);
+}
+
+/* 复制成功提示 */
+.code-copy-tooltip {
+    position: absolute;
+    top: 48px;
+    right: 80px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75em;
+    font-family: 'Fira Code', 'Fira Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 20;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.code-copy-tooltip.show {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+/* 亮色主题适配 */
+@media (prefers-color-scheme: light) {
+    pre[class*="language-"],
+    code[class*="language-"] {
+        background: #ffffff;
+        color: #1e1e1e;
+        border: 1px solid #e1e4e8;
+        text-shadow: none;
+    }
+
+    .code-block-container {
+        background: #ffffff;
+        border-color: #e1e4e8;
+    }
+
+    :not(pre) > code[class*="language-"] {
+        background: #f6f8fa;
+        color: #1e1e1e;
+        border-color: #e1e4e8;
+    }
+
+    .code-language-label {
+        background: rgba(255, 255, 255, 0.9);
+        color: #1e1e1e;
+        border-color: #e1e4e8;
+    }
+
+    .code-copy-button {
+        background: linear-gradient(135deg, #0366d6, #0256cc);
+    }
+
+    .code-copy-button:hover {
+        background: linear-gradient(135deg, #0256cc, #0147a6);
+    }
+}
+
+/* 暗色主题适配 */
+@media (prefers-color-scheme: dark) {
+    pre[class*="language-"],
+    code[class*="language-"] {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        border-color: #3e4451;
+    }
+
+    .code-block-container {
+        background: #1e1e1e;
+        border-color: #3e4451;
+    }
+
+    :not(pre) > code[class*="language-"] {
+        background: #2d2d30;
+        color: #d4d4d4;
+    }
+
+    .code-language-label {
+        background: rgba(30, 30, 30, 0.9);
+        color: #d4d4d4;
+        border-color: #3e4451;
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    pre[class*="language-"],
+    code[class*="language-"] {
+        font-size: 0.85em;
+        padding: 12px;
+        margin: 6px 0;
+    }
+
+    .code-language-label,
+    .code-copy-button {
+        font-size: 0.7em;
+        padding: 4px 8px;
+    }
+
+    .code-copy-button {
+        right: 70px;
+    }
+
+    .code-copy-tooltip {
+        right: 70px;
+    }
+}
+
+/* 性能优化 */
+.code-block-container {
+    contain: layout style paint;
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+/* 滚动条样式 */
+pre[class*="language-"]::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+pre[class*="language-"]::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+pre[class*="language-"]::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    transition: background 0.2s ease;
+}
+
+pre[class*="language-"]::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 代码块悬停效果 */
+.code-block-container:hover {
+    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+/* 代码行号支持（如果启用） */
+.line-numbers .line-numbers-rows {
+    border-right: 1px solid #3e4451;
+    padding-right: 10px;
+}
+
+.line-numbers-rows > span:before {
+    color: #858585;
+    font-weight: 400;
+}
+
+/* 代码高亮动画 */
+.token {
+    transition: background-color 0.2s ease;
+}
+
+.token:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+}

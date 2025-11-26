@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识库 - AI Tutor</title>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="base.css">
+    <!-- 引入 Google Fonts 模拟原生字体体验 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- 引入 KaTeX 和 Marked 库 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+    
+    <!-- 引入 Prism.js 语法高亮 -->
+    <link rel="stylesheet" href="../../css/prism.css">
+    <script src="../../lib/prism.min.js"></script>
+    
+    <!-- 引入 GLM Tutor 相关脚本 -->
+    <script src="../../js/glm-tutor-utils.js"></script>
+    <script src="../../js/glm-tutor-renderer.js"></script>
+    <script src="../../js/glm-tutor.js"></script>
+</head>
+<body>
+
+    <!-- 菜单遮罩层 -->
+    <div class="menu-backdrop" id="menuBackdrop"></div>
+    
+    <!-- 移动端覆盖层菜单 -->
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="sidebar-header">
+            <button class="menu-burger" aria-label="Menu" id="overlayMenuBurger">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+            </button>
+            <span class="brand-logo">知识库</span>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-label">功能模块</div>
+            <a href="#" class="nav-item active" data-section="notes">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"></path></svg>
+                <span>笔记</span>
+            </a>
+            <a href="#" class="nav-item" data-section="concepts">
+                <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"></path></svg>
+                <span>概念</span>
+            </a>
+            <a href="#" class="nav-item" data-section="materials">
+                <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"></path></svg>
+                <span>资料</span>
+            </a>
+            <a href="#" class="nav-item" data-section="questions">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"></path></svg>
+                <span>题库</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="avatar">U</div>
+                <div class="user-info">
+                    <div class="user-name">Student User</div>
+                    <div class="user-status">Pro Plan</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- 左侧导航栏 (Sidebar) -->
+        <aside class="sidebar learning-sidebar">
+            <div class="sidebar-header">
+                <button class="menu-burger" aria-label="Menu" id="sidebarMenuBurger">
+                    <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+                </button>
+                <span class="brand-logo">知识库</span>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">功能模块</div>
+                <a href="#" class="nav-item active" data-section="notes">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"></path></svg>
+                    <span>笔记</span>
+                </a>
+                <a href="#" class="nav-item" data-section="concepts">
+                    <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"></path></svg>
+                    <span>概念</span>
+                </a>
+                <a href="#" class="nav-item" data-section="materials">
+                    <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"></path></svg>
+                    <span>资料</span>
+                </a>
+                <a href="#" class="nav-item" data-section="questions">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"></path></svg>
+                    <span>题库</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name">Student User</div>
+                        <div class="user-status">Pro Plan</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 新侧边栏遮罩层 -->
+        <div class="blank-sidebar-backdrop" id="blankSidebarBackdrop"></div>
+
+        <!-- 新的空白侧边栏 -->
+        <div class="blank-sidebar" id="blankSidebar">
+            <div class="sidebar-header">
+                <button class="menu-burger blank-sidebar-close" aria-label="Close" id="blankSidebarClose">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+                </button>
+                <span class="brand-logo">AI Tutor</span>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">功能</div>
+                <a href="#" class="nav-item blank-sidebar-btn" id="aiChatBtn">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path></svg>
+                    <span>AI对话</span>
+                </a>
+                <a href="#" class="nav-item blank-sidebar-btn active" id="knowledgeBaseBtn">
+                    <svg viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="17.5" r="4.5"/><path d="M3 13.5h8v8H3zM13 13.5h8v8h-8z"/></svg>
+                    <span>知识库</span>
+                </a>
+                <a href="#" class="nav-item blank-sidebar-btn" id="toolboxBtn">
+                    <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7c-1.1 2.4-.7 5.4 1.3 7.4 1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0 .8-.8.8-2.1.2-2.9-.6L19 22.7c-.8.8-2.1.8-2.9 0z"/></svg>
+                    <span>工具箱</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name">Student User</div>
+                        <div class="user-status">Pro Plan</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 左上角菜单按钮 -->
+        <div class="sidebar-header" style="position: fixed; top: 20px; left: 20px; z-index: 1000;">
+            <button class="menu-burger" aria-label="Menu" id="fixedMenuBurger">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+            </button>
+        </div>
+
+        <!-- 右侧主内容区 (Main Content) -->
+        <main class="main-content learning-content">
+            <!-- 顶部栏 -->
+            <header class="top-bar">
+                <div class="section-title" id="sectionTitle">
+                    <h2>我的笔记</h2>
+                    <div class="section-actions">
+                        <button class="action-btn" id="addNewBtn">
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+                            <span>新建</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content-area" id="contentArea">
+                <!-- 笔记区域 -->
+                <div class="section-content active" id="notes-section">
+                    <div class="welcome-screen">
+                        <div class="hero-icon">
+                            <svg viewBox="0 0 24 24" class="sparkle-large" style="overflow: visible;">
+                                <defs>
+                                    <linearGradient id="notes-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#9B72CB;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <path fill="url(#notes-gradient)" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z" />
+                            </svg>
+                        </div>
+                        <h1>我的笔记</h1>
+                        <p class="subtitle">记录学习过程中的重要知识点和思考</p>
+                        
+                        <div class="suggestion-grid">
+                            <button class="suggestion-card" onclick="createNewNote()">
+                                <span class="card-icon">📝</span>
+                                <span class="card-text">创建新笔记</span>
+                            </button>
+                            <button class="suggestion-card" onclick="viewRecentNotes()">
+                                <span class="card-icon">📚</span>
+                                <span class="card-text">查看最近笔记</span>
+                            </button>
+                            <button class="suggestion-card" onclick="searchNotes()">
+                                <span class="card-icon">🔍</span>
+                                <span class="card-text">搜索笔记</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 概念区域 -->
+                <div class="section-content" id="concepts-section">
+                    <div class="welcome-screen">
+                        <div class="hero-icon">
+                            <svg viewBox="0 0 24 24" class="sparkle-large" style="overflow: visible;">
+                                <defs>
+                                    <linearGradient id="concepts-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#9B72CB;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <path fill="url(#concepts-gradient)" d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
+                            </svg>
+                        </div>
+                        <h1>概念库</h1>
+                        <p class="subtitle">理解和掌握各学科的核心概念</p>
+                        
+                        <div class="suggestion-grid">
+                            <button class="suggestion-card" onclick="browseConcepts()">
+                                <span class="card-icon">🧠</span>
+                                <span class="card-text">浏览概念</span>
+                            </button>
+                            <button class="suggestion-card" onclick="conceptMap()">
+                                <span class="card-icon">🕸️</span>
+                                <span class="card-text">概念图谱</span>
+                            </button>
+                            <button class="suggestion-card" onclick="practiceConcepts()">
+                                <span class="card-icon">💡</span>
+                                <span class="card-text">概念练习</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 资料区域 -->
+                <div class="section-content" id="materials-section">
+                    <div class="welcome-screen">
+                        <div class="hero-icon">
+                            <svg viewBox="0 0 24 24" class="sparkle-large" style="overflow: visible;">
+                                <defs>
+                                    <linearGradient id="materials-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#9B72CB;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <path fill="url(#materials-gradient)" d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z" />
+                            </svg>
+                        </div>
+                        <h1>学习资料</h1>
+                        <p class="subtitle">管理学习文档、视频和其他资源</p>
+                        
+                        <div class="suggestion-grid">
+                            <button class="suggestion-card" onclick="uploadMaterial()">
+                                <span class="card-icon">📤</span>
+                                <span class="card-text">上传资料</span>
+                            </button>
+                            <button class="suggestion-card" onclick="browseMaterials()">
+                                <span class="card-icon">📁</span>
+                                <span class="card-text">浏览资料</span>
+                            </button>
+                            <button class="suggestion-card" onclick="organizeMaterials()">
+                                <span class="card-icon">🗂️</span>
+                                <span class="card-text">整理资料</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 题库区域 -->
+                <div class="section-content" id="questions-section">
+                    <div class="welcome-screen">
+                        <div class="hero-icon">
+                            <svg viewBox="0 0 24 24" class="sparkle-large" style="overflow: visible;">
+                                <defs>
+                                    <linearGradient id="questions-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#9B72CB;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <path fill="url(#questions-gradient)" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                            </svg>
+                        </div>
+                        <h1>题库</h1>
+                        <p class="subtitle">练习题目，巩固学习成果</p>
+                        
+                        <div class="suggestion-grid">
+                            <button class="suggestion-card" onclick="startPractice()">
+                                <span class="card-icon">✏️</span>
+                                <span class="card-text">开始练习</span>
+                            </button>
+                            <button class="suggestion-card" onclick="viewProgress()">
+                                <span class="card-icon">📊</span>
+                                <span class="card-text">查看进度</span>
+                            </button>
+                            <button class="suggestion-card" onclick="customQuiz()">
+                                <span class="card-icon">🎯</span>
+                                <span class="card-text">自定义测试</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="base.js"></script>
+</body>
+</html>

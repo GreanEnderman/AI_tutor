@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入 Google Fonts 模拟原生字体体验 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- 引入 KaTeX 和 Marked 库 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+    
+    <!-- 引入 Prism.js 语法高亮 -->
+    <link rel="stylesheet" href="css/prism.css">
+    <script src="lib/prism.min.js"></script>
+    
+    <!-- 引入 GLM Tutor 相关脚本 -->
+    <script src="js/glm-tutor-utils.js"></script>
+    <script src="js/glm-tutor-renderer.js"></script>
+    <script src="js/glm-tutor.js"></script>
+</head>
+<body>
+
+    <!-- 菜单遮罩层 -->
+    <div class="menu-backdrop" id="menuBackdrop"></div>
+    
+    <!-- 移动端覆盖层菜单 -->
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="sidebar-header">
+            <button class="menu-burger" aria-label="Menu" id="overlayMenuBurger">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+            </button>
+            <span class="brand-logo">AI Tutor</span>
+        </div>
+
+        <button class="new-chat-btn" id="overlayNewChatBtn">
+            <svg viewBox="0 0 24 24" class="icon-plus"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+            <span>新建对话</span>
+        </button>
+
+        <div class="nav-section">
+            <div class="nav-label">功能</div>
+            <a href="#" class="nav-item active">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path></svg>
+                <span>AI 辅导对话</span>
+            </a>
+        </div>
+
+        <div class="nav-section scrollable">
+            <div class="nav-label">最近历史</div>
+            <div class="history-list" id="overlayHistoryList">
+                <!-- 历史记录将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="avatar">U</div>
+                <div class="user-info">
+                    <div class="user-name">Student User</div>
+                    <div class="user-status">Pro Plan</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新侧边栏遮罩层 -->
+    <div class="blank-sidebar-backdrop" id="blankSidebarBackdrop"></div>
+
+    <!-- 新的空白侧边栏 -->
+    <div class="blank-sidebar" id="blankSidebar">
+        <div class="sidebar-header">
+            <button class="menu-burger blank-sidebar-close" aria-label="Close" id="blankSidebarClose">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+            </button>
+            <span class="brand-logo">AI Tutor</span>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-label">功能</div>
+            <a href="#" class="nav-item blank-sidebar-btn active" id="aiChatBtn">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path></svg>
+                <span>AI对话</span>
+            </a>
+            <a href="#" class="nav-item blank-sidebar-btn" id="knowledgeBaseBtn">
+                <svg viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="17.5" r="4.5"/><path d="M3 13.5h8v8H3zM13 13.5h8v8h-8z"/></svg>
+                <span>知识库</span>
+            </a>
+            <a href="#" class="nav-item blank-sidebar-btn" id="toolboxBtn">
+                <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7c-1.1 2.4-.7 5.4 1.3 7.4 1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0 .8-.8.8-2.1.2-2.9-.6L19 22.7c-.8.8-2.1.8-2.9 0z"/></svg>
+                <span>工具箱</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="avatar">U</div>
+                <div class="user-info">
+                    <div class="user-name">Student User</div>
+                    <div class="user-status">Pro Plan</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- 左侧导航栏 (Sidebar) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <button class="menu-burger" aria-label="Menu" id="sidebarMenuBurger">
+                    <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+                </button>
+                <span class="brand-logo">AI Tutor</span>
+            </div>
+
+            <button class="new-chat-btn" id="newChatBtn">
+                <svg viewBox="0 0 24 24" class="icon-plus"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+                <span>新建对话</span>
+            </button>
+
+            <div class="nav-section">
+                <div class="nav-label">功能</div>
+                <a href="#" class="nav-item active">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path></svg>
+                    <span>AI 辅导对话</span>
+                </a>
+            </div>
+
+            <div class="nav-section scrollable">
+                <div class="nav-label">最近历史</div>
+                <div class="history-list">
+                    <!-- 历史记录将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name">Student User</div>
+                        <div class="user-status">Pro Plan</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 右侧主内容区 (Main Content) -->
+        <main class="main-content">
+            <!-- 顶部栏 -->
+            <header class="top-bar">
+                <div class="model-selector">
+                    <span>GLM</span>
+                    <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"></path></svg>
+                </div>
+            </header>
+
+            <!-- 聊天区域 -->
+            <div class="chat-area" id="chatArea">
+                <!-- 欢迎屏幕 (初始状态) -->
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="hero-icon">
+                        <!-- AI Sparkle Icon -->
+                        <svg viewBox="0 0 24 24" class="sparkle-large" style="overflow: visible;">
+                            <defs>
+                                <linearGradient id="sparkle-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#9B72CB;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path fill="url(#sparkle-gradient)" d="M12 2L9.19 8.63 2.56 11.44 9.19 14.25 12 20.88 14.81 14.25 21.44 11.44 14.81 8.63z" />
+                        </svg>
+                    </div>
+                    <h1>你好，我是你的 AI 家教</h1>
+                    <p class="subtitle">今天想学点什么？我可以帮你解答难题、制定计划或解释复杂概念。</p>
+                    
+                    <div class="suggestion-grid">
+                        <button class="suggestion-card" onclick="setInput('什么是泰勒展开？请用通俗易懂的语言解释。')">
+                            <span class="card-icon">📐</span>
+                            <span class="card-text">什么是泰勒展开？</span>
+                        </button>
+                        <button class="suggestion-card" onclick="setInput('薛定谔方程是什么？它在量子力学中有什么意义？')">
+                            <span class="card-icon">⚛️</span>
+                            <span class="card-text">薛定谔方程是什么？</span>
+                        </button>
+                        <button class="suggestion-card" onclick="setInput('写一个 C++ Hello World 程序，并解释每一行代码。')">
+                            <span class="card-icon">💻</span>
+                            <span class="card-text">写一个 C++ Hello World</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 消息列表 (动态生成) -->
+                <div class="message-list" id="messageList" style="display: none;">
+                    <!-- JS 将在此处插入消息 -->
+                </div>
+            </div>
+
+            <!-- 底部输入区域 -->
+            <div class="input-wrapper">
+                <!-- 快捷工具栏 -->
+                <div class="action-toolbar">
+                    <button class="action-btn" id="exportPdfBtn" title="将对话导出为 PDF">
+                        <!-- PDF Icon -->
+                        <svg viewBox="0 0 24 24" style="fill: #B22222;"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"></path></svg>
+                        <span>Chat to PDF</span>
+                    </button>
+                </div>
+
+                <!-- 主输入框 -->
+                <div class="input-container">
+                    <!-- 文件上传 -->
+                    <div class="upload-trigger">
+                        <input type="file" id="fileInput" accept=".pdf,.ppt,.pptx,.doc,.docx,image/*" hidden>
+                        <button class="icon-btn" id="uploadBtn" title="上传图片或文档">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- 文本输入 -->
+                    <textarea id="chatInput" placeholder="输入问题，或者上传作业图片/文档..." rows="1"></textarea>
+
+                    <!-- 发送按钮 -->
+                    <button class="send-btn" id="sendBtn" disabled>
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                    </button>
+                </div>
+                
+                <div class="footer-note">AI 可能会显示不准确的信息，包括有关人物的信息，请仔细核对。</div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

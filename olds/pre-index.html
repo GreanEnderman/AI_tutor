@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLM4.5 AI智能家教</title>
+    <!-- 先加载 KaTeX CSS -->
+    <link rel="stylesheet" href="css/katex.min.css">
+    <!-- 然后加载 KaTeX JS -->
+    <script src="lib/katex.min.js"></script>
+    <!-- 加载 KaTeX 扩展 -->
+    <script src="lib/auto-render.min.js"></script>
+    <!-- 最后加载 marked.js -->
+    <script src="lib/marked.min.js"></script>
+    <!-- 加载 Prism.js 语法高亮库 -->
+    <link rel="stylesheet" href="css/prism.css">
+    <script src="lib/prism.min.js"></script>
+    <script src="lib/prism-components.js"></script>
+    <!-- 简单高亮器作为降级方案 -->
+    <script src="lib/prism-simple.js"></script>
+    <link rel="stylesheet" href="css/glm-tutor.css">
+    <!-- 引入模块化文件 -->
+    <script src="js/glm-tutor-utils.js"></script>
+    <script src="js/glm-tutor-renderer.js"></script>
+    <script src="js/glm-tutor-concepts.js"></script>
+    <!-- 引入专有名词库 -->
+    <script src="data/terminology-database.js"></script>
+</head>
+<body>
+    <!-- 可访问性跳过链接 -->
+    <a href="#chatContainer" class="skip-link">跳转到聊天内容</a>
+
+    <div class="sidebar" role="complementary" aria-label="侧边栏导航">
+        <div class="sidebar-header">
+            <h1>🎓 GLM4.5 AI智能家教</h1>
+            <p>您的专属学习助手 - 基于智谱GLM4.5大模型</p>
+        </div>
+
+        <div class="sidebar-actions" role="navigation" aria-label="操作按钮">
+            <button id="newChatBtn" class="sidebar-action-btn" title="新建对话" aria-label="新建对话">
+                📝 新建对话
+            </button>
+            <button id="clearChatBtn" class="sidebar-action-btn" title="清空对话" aria-label="清空当前对话">
+                🗑️ 清空对话
+            </button>
+            <button id="exportBtn" class="sidebar-action-btn" title="导出对话" aria-label="导出对话记录">
+                📥 导出对话
+            </button>
+        </div>
+        
+        <div class="sidebar-history" role="navigation" aria-label="对话历史">
+            <div class="sidebar-history-header">
+                <h3>📚 对话历史</h3>
+                <button id="clearHistoryBtn" class="clear-history-btn" title="清空所有历史记录" aria-label="清空所有对话历史">🗑️</button>
+            </div>
+            <div id="historyContent" class="sidebar-history-content" aria-live="polite" aria-label="历史对话列表">
+                <div class="history-empty">暂无对话历史</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div class="chat-container" id="chatContainer" role="main">
+            <div class="message assistant">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <div>您好！我是基于GLM4.5的AI智能家教助手。我可以帮助您：</div>
+                    <div>📚 解答各学科问题（数学、语文、英语、物理、化学等）</div>
+                    <div>📝 制定学习计划和提供学习建议</div>
+                    <div>💡 解释复杂概念和知识点</div>
+                    <div>🔍 辅导作业和提供解题思路</div>
+                    <div style="margin-top: 10px;">请向我提问任何学习问题吧！</div>
+                    <div class="message-time">现在</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 输入容器移动到最底部 -->
+    <div class="input-container" role="form" aria-label="消息输入">
+        <div class="input-wrapper">
+            <textarea
+                id="messageInput"
+                class="message-input"
+                placeholder="请输入您的学习问题..."
+                rows="1"
+                aria-label="输入您的问题"
+                aria-describedby="input-help"
+            ></textarea>
+            <button id="sendButton" class="send-button" aria-label="发送消息">
+                发送
+            </button>
+        </div>
+        <div id="input-help" class="sr-only">输入您的学习问题，按Enter发送，Shift+Enter换行</div>
+    </div>
+
+    <!-- 模型信息 -->
+    <div class="model-info" role="status" aria-live="polite" aria-label="模型状态信息">
+        <div><strong>当前模型：</strong>GLM-4.5</div>
+        <div><strong>状态：</strong><span id="status">已连接</span></div>
+    </div>
+    
+
+    <script src="js/glm-tutor.js"></script>
+</body>
+</html>

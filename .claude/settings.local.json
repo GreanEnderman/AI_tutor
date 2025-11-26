@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:cdnjs.cloudflare.com)",
+      "Bash(openspec validate:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
