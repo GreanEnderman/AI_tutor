@@ -12,9 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     
     <!-- 引入 KaTeX 和 Marked 库 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+    <link rel="stylesheet" href="../../lib/katex.min.css">
+    <script src="../../lib/katex.min.js"></script>
+    <script src="../../lib/marked.min.js"></script>
     
     <!-- 引入 Prism.js 语法高亮 -->
     <link rel="stylesheet" href="../../css/prism.css">
@@ -164,9 +164,25 @@
                 <div class="section-title" id="sectionTitle">
                     <h2>我的笔记</h2>
                     <div class="section-actions">
+                        <button class="action-btn" id="batchManageBtn" style="display: none;">
+                            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path></svg>
+                            <span>批量管理</span>
+                        </button>
+                        <button class="action-btn" id="cancelBatchBtn" style="display: none;">
+                            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+                            <span>取消</span>
+                        </button>
+                        <button class="action-btn" id="batchDeleteBtn" style="display: none;">
+                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+                            <span>删除选中</span>
+                        </button>
                         <button class="action-btn" id="addNewBtn">
                             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
                             <span>新建</span>
+                        </button>
+                        <button class="action-btn" id="uploadNoteBtn">
+                            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path></svg>
+                            <span>上传</span>
                         </button>
                     </div>
                 </div>
@@ -174,37 +190,195 @@
 
             <!-- 内容区域 -->
             <div class="content-area" id="contentArea">
+                <!-- 笔记编辑器模态框 -->
+                <div class="note-editor-modal" id="noteEditorModal">
+                    <div class="note-editor-container">
+                        <!-- 编辑器头部 -->
+                        <div class="note-editor-header">
+                            <div class="note-editor-left">
+                                <button class="btn-icon" id="backToListBtn" title="返回列表">
+                                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+                                </button>
+                                <input type="text" class="note-title-input" id="noteTitleInput" placeholder="无标题笔记">
+                            </div>
+                            <div class="note-editor-right">
+                                <button class="btn-primary" id="saveNoteBtn" title="保存笔记 (Ctrl+S)">
+                                    <svg viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z" fill="currentColor"/></svg>
+                                    <span>保存</span>
+                                </button>
+                                <span class="save-status" id="saveStatus">未保存</span>
+                                <button class="btn-icon" id="noteSettingsBtn" title="设置">
+                                    <svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                                </button>
+                                <button class="btn-icon" id="deleteNoteBtn" title="删除">
+                                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 工具栏 -->
+                        <div class="note-editor-toolbar">
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" data-action="bold" title="粗体 (Ctrl+B)">
+                                    <svg viewBox="0 0 24 24"><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"></path></svg>
+                                </button>
+                                <button class="toolbar-btn" data-action="italic" title="斜体 (Ctrl+I)">
+                                    <svg viewBox="0 0 24 24"><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"></path></svg>
+                                </button>
+                                <button class="toolbar-btn" data-action="heading" title="标题">
+                                    <svg viewBox="0 0 24 24"><path d="M3 4h6v6h4V4h6v16h-6v-6H9v6H3V4z"></path></svg>
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" data-action="ul" title="无序列表">
+                                    <svg viewBox="0 0 24 24"><path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"></path></svg>
+                                </button>
+                                <button class="toolbar-btn" data-action="ol" title="有序列表">
+                                    <svg viewBox="0 0 24 24"><path d="M2 17h2v.5H3v1h1v.5H2v1h3v-4H2v1zm1-9h1V4H2v1h1v3zm-1 3h1.8L2 13.1v.9h3v-1H3.2L5 10.9V10H2v1zm5-6v2h14V5H7zm0 14h14v-2H7v2zm0-6h14v-2H7v2z"></path></svg>
+                                </button>
+                                <button class="toolbar-btn" data-action="checklist" title="任务列表">
+                                    <svg viewBox="0 0 24 24"><path d="M22,7V9H11V7H22M11,13H22V15H11V13M22,19H11V17H22V19M9,17H7V14H9V17M9,7V10H7V7H9M9,12V8H7V12H9M9,21H7V18H9V21M10,2L8,4V5H3V4H1V20H3V19H8V20H10V2Z"></path></svg>
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" data-action="quote" title="引用">
+                                    <svg viewBox="0 0 24 24"><path d="M6.5 10c-.223 0-.437.034-.65.065.069-.232.14-.468.254-.68.114-.308.292-.575.469-.844.148-.291.409-.488.601-.737.201-.242.475-.403.692-.604.213-.21.492-.315.714-.463.232-.133.434-.28.65-.35.208-.086.39-.16.539-.222.302-.125.474-.197.474-.197L9.758 4.03c0 0-.218.052-.597.144-.19.043-.423.096-.688.158-.274.05-.523.19-.828.283-.311.08-.618.271-.961.424-.354.143-.705.386-1.092.602-.376.232-.775.448-1.138.757-.366.291-.736.577-1.05.949-.35.332-.625.724-.904 1.113-.265.401-.493.814-.702 1.223-.19.425-.34.85-.458 1.268-.207.834-.32 1.629-.32 2.297 0 2.043.728 3.889 1.925 5.248C3.218 16.846 2.907 17.197 2.625 17.62 2.282 18.121 2 18.734 2 19.4c0 .853.239 1.511.672 1.965.436.456 1.03.68 1.703.68.701 0 1.247-.254 1.634-.669.386-.415.586-.938.586-1.531 0-.49-.16-.904-.474-1.262C4.806 17.576 4.478 17.25 4.139 17.25c-.171 0-.334.03-.492.086l.003-.019c.162-.395.399-.796.699-1.176C4.748 15.459 5.236 15 5.75 14.596c.5-.386.995-.724 1.438-1.014.438-.292.819-.504 1.1-.674.284-.173.44-.27.44-.27l-.702-1.212c0 0-.197.084-.531.258z"></path></svg>
+                                </button>
+                                <button class="toolbar-btn" data-action="code" title="代码">
+                                    <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"></path></svg>
+                                </button>
+                                <button class="toolbar-btn" data-action="link" title="链接">
+                                    <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path></svg>
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" data-action="table" title="表格">
+                                    <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path></svg>
+                                </button>
+                                <button class="toolbar-btn" data-action="math" title="数学公式">
+                                    <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"></path></svg>
+                                </button>
+                                <button class="toolbar-btn" data-action="image" title="图片">
+                                    <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"></path></svg>
+                                </button>
+                            </div>
+                            <div class="toolbar-group toolbar-right">
+                                <button class="toolbar-btn" id="previewToggle" title="切换预览">
+                                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 编辑器主体 -->
+                        <div class="note-editor-body">
+                            <!-- 左侧编辑区 -->
+                            <div class="note-editor-pane note-editor-input">
+                                <textarea class="note-content-input" id="noteContentInput" placeholder="开始输入你的笔记内容...支持 Markdown 语法
+
+# 标题
+## 子标题
+
+- 无序列表项
+- 另一个列表项
+
+1. 有序列表项
+2. 另一个有序项
+
+**粗体文本** 和 *斜体文本*
+
+> 引用文本
+
+```javascript
+// 代码块
+console.log('Hello, World!');
+```
+
+[链接文本](https://example.com)
+
+$数学公式: E = mc^2$"></textarea>
+                            </div>
+
+                            <!-- 分隔条 -->
+                            <div class="note-editor-divider" id="editorDivider"></div>
+
+                            <!-- 右侧预览区 -->
+                            <div class="note-editor-pane note-editor-preview">
+                                <div class="note-preview-content" id="notePreviewContent">
+                                    <div class="preview-placeholder">
+                                        <svg viewBox="0 0 24 24" class="preview-icon"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+                                        <p>预览区域</p>
+                                        <small>在左侧输入 Markdown 内容，这里将显示实时预览</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 编辑器底部状态栏 -->
+                        <div class="note-editor-footer">
+                            <div class="note-editor-left">
+                                <span class="word-count" id="wordCount">0 字</span>
+                                <span class="char-count" id="charCount">0 字符</span>
+                            </div>
+                            <div class="note-editor-right">
+                                <span class="storage-info" id="storageInfo">存储: 0 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 笔记阅读视图模态框 -->
+                <div class="note-reader-modal" id="noteReaderModal">
+                    <div class="note-reader-container">
+                        <!-- 阅读器头部 -->
+                        <div class="note-reader-header">
+                            <div class="note-reader-left">
+                                <button class="btn-icon" id="backToListFromReaderBtn" title="返回列表">
+                                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+                                </button>
+                                <h1 class="note-reader-title" id="noteReaderTitle">无标题笔记</h1>
+                            </div>
+                            <div class="note-reader-right">
+                                <button class="btn-primary" id="editFromReaderBtn" title="编辑笔记">
+                                    <svg viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
+                                    <span>编辑</span>
+                                </button>
+                                <button class="btn-icon" id="readerSettingsBtn" title="设置">
+                                    <svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                                </button>
+                                <button class="btn-icon" id="closeReaderBtn" title="关闭">
+                                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 阅读器主体 -->
+                        <div class="note-reader-body">
+                            <div class="note-reader-content" id="noteReaderContent">
+                                <div class="reader-placeholder">
+                                    <div class="loading-spinner"></div>
+                                    <p>加载中...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 阅读器底部状态栏 -->
+                        <div class="note-reader-footer">
+                            <div class="note-reader-left">
+                                <span class="word-count" id="readerWordCount">0 字</span>
+                                <span class="creation-date" id="readerCreationDate">创建于 2024年1月1日</span>
+                            </div>
+                            <div class="note-reader-right">
+                                <span class="reading-time" id="readerReadingTime">预计阅读时间 0 分钟</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- 笔记区域 -->
                 <div class="section-content active" id="notes-section">
-                    <div class="welcome-screen">
-                        <div class="hero-icon">
-                            <svg viewBox="0 0 24 24" class="sparkle-large" style="overflow: visible;">
-                                <defs>
-                                    <linearGradient id="notes-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
-                                        <stop offset="100%" style="stop-color:#9B72CB;stop-opacity:1" />
-                                    </linearGradient>
-                                </defs>
-                                <path fill="url(#notes-gradient)" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z" />
-                            </svg>
-                        </div>
-                        <h1>我的笔记</h1>
-                        <p class="subtitle">记录学习过程中的重要知识点和思考</p>
-                        
-                        <div class="suggestion-grid">
-                            <button class="suggestion-card" onclick="createNewNote()">
-                                <span class="card-icon">📝</span>
-                                <span class="card-text">创建新笔记</span>
-                            </button>
-                            <button class="suggestion-card" onclick="viewRecentNotes()">
-                                <span class="card-icon">📚</span>
-                                <span class="card-text">查看最近笔记</span>
-                            </button>
-                            <button class="suggestion-card" onclick="searchNotes()">
-                                <span class="card-icon">🔍</span>
-                                <span class="card-text">搜索笔记</span>
-                            </button>
-                        </div>
+                    <!-- 笔记列表容器 -->
+                    <div class="notes-list-container" id="notesListContainer">
+                        <!-- 笔记列表将通过JavaScript动态生成 -->
                     </div>
                 </div>
 
@@ -312,6 +486,9 @@
             </div>
         </main>
     </div>
+
+    <!-- 文件上传输入框（隐藏） -->
+    <input type="file" id="markdownFileInput" accept=".md,.markdown" style="display: none;">
 
     <script src="base.js"></script>
 </body>

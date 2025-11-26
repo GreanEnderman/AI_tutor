@@ -778,8 +778,19 @@ $$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$
     if (knowledgeBaseBtn) {
         knowledgeBaseBtn.addEventListener('click', () => {
             console.log('知识库按钮被点击');
-            // 跳转到知识库页面（当前标签页）
-            window.location.href = 'pages/base/base.html';
+            // 跳转到知识库页面并直接显示最近笔记
+            window.location.href = 'pages/base/base.html?action=viewRecentNotes';
+        });
+    }
+    
+    // 覆盖层菜单中的知识库按钮（如果存在）
+    const overlayKnowledgeBaseBtn = document.querySelector('#menuOverlay .nav-item[data-section="notes"]');
+    if (overlayKnowledgeBaseBtn) {
+        overlayKnowledgeBaseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('覆盖层知识库按钮被点击');
+            // 跳转到知识库页面并直接显示最近笔记
+            window.location.href = 'pages/base/base.html?action=viewRecentNotes';
         });
     }
     
